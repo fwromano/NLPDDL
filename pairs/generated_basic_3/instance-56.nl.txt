@@ -1,0 +1,12 @@
+The problem is defined within the "blocksworld-4ops" domain, which typically involves manipulating blocks. The objects in this scenario are three blocks: a, b, and c.
+
+The initial state includes the following conditions:
+- The hand is empty.
+- Block a is on top of block c.
+- Block b is on top of block a.
+- Block c is on the table.
+- Block b is clear, meaning nothing is on top of it.
+
+The goal of the problem is to have block a placed on top of block b.
+
+There are no numeric constraints specified in this problem.
