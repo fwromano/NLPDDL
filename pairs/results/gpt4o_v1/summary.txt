@@ -1,0 +1,214 @@
+
+Round‑trip validation – tag: gpt4o_v1
+Source root : pairs
+Regen root  : pairs/nl2pddl/gpt4o_v1
+------------------------------------------------------------
+FAIL  generated_basic_3/instance-70.pddl
+    --- orig
+
+    +++ regen
+
+    @@ -1,20 +1,19 @@
+
+    -
+    -
+    -(define (problem BW-rand-3)
+    -(:domain blocksworld-4ops)
+    -(:objects a b c )
+    -(:init
+    -(handempty)
+    -(on a b)
+    -(ontable b)
+    -(ontable c)
+    -(clear a)
+    -(clear c)
+    +```pddl
+    +(define (problem blocksworld-4ops-1)
+    +  (:domain blocksworld-4ops)
+    +  (:objects
+    +    a b c - block
+    +  )
+    +  (:init
+    +    (hand-empty)
+    +    (on a b)
+    +    (on b table)
+    +    (on c table)
+    +    (clear a)
+    +    (clear c)
+    +  )
+    +  (:goal
+    +    (on b c)
+    +  )
+     )
+    -(:goal
+    -(and
+    -(on b c))
+    -)
+    -)
+    -
+    -
+    +```
+
+FAIL  generated_basic_3/instance-91.pddl
+    --- orig
+
+    +++ regen
+
+    @@ -1,20 +1,12 @@
+
+    -
+    -
+    -(define (problem BW-rand-3)
+    -(:domain blocksworld-4ops)
+    -(:objects a b c )
+    -(:init
+    -(handempty)
+    -(ontable a)
+    -(on b c)
+    -(ontable c)
+    -(clear a)
+    -(clear b)
+    -)
+    -(:goal
+    -(and
+    -(on c a))
+    -)
+    -)
+    -
+    -
+    +```pddl
+    +(define (problem blocksworld-4ops-1)
+    +  (:domain blocksworld-4ops)
+    +  (:objects a b c - block)
+    +  (:init (hand-empty)
+    +         (on-table a)
+    +         (on b c)
+    +         (on-table c)
+    +         (clear a)
+    +         (clear b))
+    +  (:goal (on a c)))
+    +```
+
+FAIL  generated_basic_3/instance-16.pddl
+    --- orig
+
+    +++ regen
+
+    @@ -1,20 +1,13 @@
+
+    -
+    -
+    -(define (problem BW-rand-3)
+    -(:domain blocksworld-4ops)
+    -(:objects a b c )
+    -(:init
+    -(handempty)
+    -(ontable a)
+    -(on b c)
+    -(on c a)
+    -(clear b)
+    +```pddl
+    +(define (problem blocksworld-4ops)
+    +  (:domain blocksworld-4ops)
+    +  (:objects a b c - block)
+    +  (:init (hand-empty)
+    +         (on-table a)
+    +         (on b c)
+    +         (on c a)
+    +         (clear b))
+    +  (:goal (and (on a c)
+    +              (on b a)))
+     )
+    -(:goal
+    -(and
+    -(on a c)
+    -(on b a))
+    -)
+    -)
+    -
+    -
+    +```
+
+FAIL  generated_basic_3/instance-60.pddl
+    --- orig
+
+    +++ regen
+
+    @@ -1,21 +1,14 @@
+
+    -
+    -
+    -(define (problem BW-rand-3)
+    -(:domain blocksworld-4ops)
+    -(:objects a b c )
+    -(:init
+    -(handempty)
+    -(on a c)
+    -(ontable b)
+    -(ontable c)
+    -(clear a)
+    -(clear b)
+    +```pddl
+    +(define (problem blocksworld-4ops)
+    +  (:domain blocksworld-4ops)
+    +  (:objects a b c - block)
+    +  (:init (empty-hand)
+    +         (on a c)
+    +         (on b table)
+    +         (on c table)
+    +         (clear a)
+    +         (clear b))
+    +  (:goal (and (on a b)
+    +              (on c a)))
+     )
+    -(:goal
+    -(and
+    -(on a b)
+    -(on c a))
+    -)
+    -)
+    -
+    -
+    +```
+
+FAIL  generated_basic_3/instance-86.pddl
+    --- orig
+
+    +++ regen
+
+    @@ -1,20 +1,12 @@
+
+    -
+    -
+    -(define (problem BW-rand-3)
+    -(:domain blocksworld-4ops)
+    -(:objects a b c )
+    -(:init
+    -(handempty)
+    -(ontable a)
+    -(on b a)
+    -(ontable c)
+    -(clear b)
+    -(clear c)
+    -)
+    -(:goal
+    -(and
+    -(on c b))
+    -)
+    -)
+    -
+    -
+    +```pddl
+    +(define (problem blocksworld-4ops-problem)
+    +  (:domain blocksworld-4ops)
+    +  (:objects a b c - block)
+    +  (:init (hand-empty)
+    +         (on-table a)
+    +         (on b a)
+    +         (on-table c)
+    +         (clear b)
+    +         (clear c))
+    +  (:goal (on c b)))
+    +```
+
+Done.

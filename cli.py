@@ -1,15 +1,4 @@
-"""Command-line interface for the multi-stage PDDL↔NL pipeline.
-
-Sub-commands:
-  fetch       - clone repo
-  pddl2nl     - generate NL files (skips if exists)
-  nl2pddl     - regenerate PDDL from NL (skips if exists)
-  validate    - compare original vs regenerated
-  all         - run every stage in order (uses skips)
-
-Example end-to-end run (one-liner):
-  python -m pddl_roundtrip.cli all --repo URL --subdir path --model gpt-4o-mini
-"""
+"""cli.py – Command‑line front‑end for the PDDL↔NL pipeline (tag‑aware)."""
 from __future__ import annotations
 import argparse, tempfile
 from pathlib import Path
@@ -18,7 +7,7 @@ from typing import Iterable
 from fetch import clone_repo, iter_pddl_files
 from pddl2nl import pddl_to_nl
 from nl2pddl import nl_to_pddl
-from validate import validate_pair
+from validate import validate_tag
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -31,7 +20,7 @@ def _walk_instances(work: Path, subdir: str, limit: int | None) -> Iterable[Path
         yield p
 
 # ---------------------------------------------------------------------------
-# Sub-commands
+# Sub‑commands
 # ---------------------------------------------------------------------------
 
 def cmd_fetch(args):
@@ -48,20 +37,15 @@ def cmd_pddl2nl(args):
 def cmd_nl2pddl(args):
     root = Path(args.out)
     for nl in root.rglob("*.nl.txt"):
-        regen = nl_to_pddl(nl, root, args.model, args.temp, args.force)
+        regen = nl_to_pddl(nl, root, args.tag, args.model, args.temp, args.force)
         print(f"PDDL,{regen.relative_to(args.out)}")
 
 
 def cmd_validate(args):
-    root = Path(args.out)
-    for orig in root.rglob("*.pddl"):
-        if orig.name.endswith(".regen.pddl"):
-            continue
-        regen = orig.with_suffix(".regen.pddl")
-        if regen.exists():
-            res = validate_pair(orig, regen, root)
-            status = "OK" if res["success"] else "FAIL"
-            print(f"{status},{res['file']}")
+    results = validate_tag(Path(args.out), args.tag)
+    for res in results:
+        status = "OK" if res["success"] else "FAIL"
+        print(f"{status},{res['file']}")
 
 
 def cmd_all(args):
@@ -74,7 +58,7 @@ def cmd_all(args):
 # ---------------------------------------------------------------------------
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(prog="pddl-roundtrip", description="PDDL↔NL pipeline")
+    ap = argparse.ArgumentParser(prog="pddl-roundtrip", description="PDDL↔NL pipeline (tag‑aware)")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     def add_common(subcmd):
@@ -87,9 +71,20 @@ def build_parser() -> argparse.ArgumentParser:
         subcmd.add_argument("--max", type=int)
         subcmd.add_argument("--force", action="store_true")
 
-    for name, func in [("fetch", cmd_fetch), ("pddl2nl", cmd_pddl2nl), ("nl2pddl", cmd_nl2pddl), ("validate", cmd_validate), ("all", cmd_all)]:
-        sc = sub.add_parser(name, help=func.__doc__)
+    # fetch / pddl2nl keep base behaviour
+    for name, func in [("fetch", cmd_fetch), ("pddl2nl", cmd_pddl2nl)]:
+        sc = sub.add_parser(name)
         add_common(sc)
+        sc.set_defaults(func=func)
+
+    # nl2pddl / validate / all need a variant tag
+    def add_tag(subcmd):
+        add_common(subcmd)
+        subcmd.add_argument("--tag", required=True, help="Label for nl2pddl variant (e.g. model or prompt)")
+
+    for name, func in [("nl2pddl", cmd_nl2pddl), ("validate", cmd_validate), ("all", cmd_all)]:
+        sc = sub.add_parser(name)
+        add_tag(sc)
         sc.set_defaults(func=func)
 
     return ap

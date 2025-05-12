@@ -51,16 +51,23 @@ def llm_chat(messages: List[dict], model: str = "gpt-4o-mini", **kwargs) -> str:
 # PDDL helpers
 # ---------------------------------------------------------------------------
 
-def normalize_pddl(text: str) -> str:
-    """Lower-case PDDL, remove comments and excess whitespace (quick compare)."""
-    lines = [l.split(";", 1)[0] for l in text.splitlines()]  # strip `;` comments
-    return "".join(l.strip().lower() for l in lines if l.strip())
 
 
 def diff_pddl(a: str, b: str) -> str:
     return "\n".join(
         difflib.unified_diff(a.splitlines(), b.splitlines(), fromfile="orig", tofile="regen")
     )
+
+
+import re
+
+def normalize_pddl(text: str) -> str:
+    # remove ``` blocks
+    text = re.sub(r"```pddl|```", "", text, flags=re.IGNORECASE)
+    # drop comments ; … and collapse whitespace
+    lines = [l.split(";", 1)[0] for l in text.splitlines()]
+    return "".join(l.strip().lower() for l in lines if l.strip())
+
 
 # ---------------------------------------------------------------------------
 # Filesystem helpers
